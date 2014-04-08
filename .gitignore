@@ -1,2 +1,8 @@
 *~
 *.pyc
+.env/
+
+# configs
+imh/configs/*
+!imh/configs/__init__.py
+!imh/configs/settings.py
