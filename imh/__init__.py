@@ -1,5 +1,6 @@
 from flask import Flask
 from models import db
+from admin import admin
 
 app = Flask(__name__)
 app.config.from_object('imh.configs.settings')
@@ -9,6 +10,7 @@ except Exception as e:
     print e
 
 db.init_app(app)
+admin.init_app(app)
 
 
 import views
