@@ -1,6 +1,6 @@
-from flask import render_template
+from flask import render_template, make_response
 from imh import app
 
 @app.route('/')
 def index():
-    return render_template('layout.html')
+    return make_response(open('imh/templates/index.html').read())
