@@ -2,16 +2,11 @@
 
 {% block body %}
    <h2>Регистрация</h2>
-   <form action="" method="POST">
-       <input type="text" placeholder="Username"
-              name="username" value="{{ request.form.username }}"
-              required />
-       <input type="password" placeholder="Password"
-              name="password" value="{{ request.form.password }}"
-              required>
-       <input type="email" placeholder="Email"
-              name="email" value="{{ request.form.email }}"
-              required>
-       <button type="submit">Зарегистрироваться</button>
+   <form action="" method="POST"> {{ form.csrf_token }}
+     {{ form.username }}
+     {{ form.email }}
+     {{ form.password }}
+     {{ form.confirm }}
+     <button type="submit">Зарегистрироваться</button>
    </form>
 {% endblock %}
