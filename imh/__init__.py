@@ -3,6 +3,7 @@ from flask.ext.login import LoginManager
 
 from models import db
 from admin import admin
+from api import api
 
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ login_manager.login_view = 'login'
 db.init_app(app)
 admin.init_app(app)
 login_manager.init_app(app)
+api.init_app(app)
 
 
 import views
