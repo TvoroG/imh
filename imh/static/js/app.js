@@ -2,7 +2,9 @@
 
 var imhApp = angular.module('imhApp', [
     'ngRoute',
-    'imhControllers'
+    'imhControllers',
+    'imhDirectives',
+    'imhServices'
 ]);
 
 imhApp.config([
