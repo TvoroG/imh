@@ -5,3 +5,5 @@ DEBUG = True
 
 # DB, override in local configs
 SQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost/dbname'
+
+WTF_CSRF_ENABLED = False

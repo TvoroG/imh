@@ -1,9 +1,8 @@
 from flask import Flask
-from flask.ext.login import LoginManager
 
-from models import db
 from admin import admin
 from api import api
+from models import db
 
 
 app = Flask(__name__)
@@ -14,13 +13,8 @@ except Exception as e:
     print e
 
 
-login_manager = LoginManager()
-login_manager.login_view = 'login'
-
-
 db.init_app(app)
 admin.init_app(app)
-login_manager.init_app(app)
 api.init_app(app)
 
 

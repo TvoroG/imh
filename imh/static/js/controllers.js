@@ -6,6 +6,10 @@ imhControllers.controller('MapCtrl', [
     '$scope', 'auth',
     function ($scope, auth) {
         $scope.login = function () {
-            auth.login();
+            auth.login($scope.username, $scope.password);
+        };
+
+        $scope.some = function () {
+            auth.some();
         };
     }]);
