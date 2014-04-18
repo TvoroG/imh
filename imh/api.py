@@ -1,10 +1,9 @@
 import colander as c
 from flask import request, abort
 from flask.ext.restful import reqparse, abort, Api, Resource
-from schemas import LoginSchema, TokenSchema
+from schemas import LoginSchema, TokenSchema, RegisterSchema
 from utils import token_required
-from forms import RegistrationForm, LoginForm
-from models import User
+from models import db, User
 
 api = Api(prefix='/api')
 
@@ -23,24 +22,30 @@ class SchemaResource(Resource):
         return super(Resource, self).dispatch_request(*args, **kwargs)
 
 
-class TokenResource(SchemaResource):
+class LoginResource(SchemaResource):
     schema = LoginSchema
     def post(self):
-        form = LoginForm()
-        if form.validate_on_submit():
-            user = User.query.filter_by(username=form.username.data).first()
-            if user is None or not user.check_password(form.password.data):
-                abort(403)
-            return {'token': user.generate_auth_token()}
-        abort(403)
+        print self.data
+        user = User.query.filter_by(username=self.data['username']).first()
+        if user is None or not user.check_password(self.data['password']):
+            abort(403)
+        return {'token': user.generate_auth_token()}
 
 
-class SomeResource(SchemaResource):
-    method_decorators = [token_required]
-    schema = TokenSchema
+class UserResource(SchemaResource):
+    schema = RegisterSchema
     def post(self):
-        return {'hello': 'world'}
+        print self.data
+        user = User.query.filter_by(username=self.data['username']).first()
+        if user is not None:
+            return {'message': 'User already exists'}, 400
+        user = User(self.data['username'],
+                    self.data['password'],
+                    self.data['email'])
+        db.session.add(user)
+        db.session.commit()
+        return {'token': user.generate_auth_token()}
 
 
-api.add_resource(TokenResource, '/token/')
-api.add_resource(SomeResource, '/some/')
+api.add_resource(LoginResource, '/login/')
+api.add_resource(UserResource, '/user/')

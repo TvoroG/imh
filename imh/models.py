@@ -47,3 +47,42 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.username)
     
+
+class Entity(db.Model):
+    __tablename__ = 'entities'
+
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=True)
+    images = db.relationship('Image', backref='entity', lazy='dynamic')
+    lat = db.Column(db.Float, nullable=True)
+    long = db.Column(db.Float, nullable=True)
+    alien_site = db.Column(db.Enum('twitter', 'vk', 'instagram', name='alien_site_types'))
+    alien_id = db.Column(db.BigInteger, nullable=True)
+    alien_name = db.Column(db.String(100), nullable=True)
+    url = db.Column(db.String(4096), nullable=True)
+
+    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, long=None):
+        self.alien_site = alien_site
+        self.alien_id = alien_id
+        self.text = text if text else None
+        self.lat = lat
+        self.long = long
+        self.url = None
+        self.alien_name = None
+
+
+class Image(db.Model):
+    __tablename__ = 'images'
+
+    id = db.Column(db.Integer, primary_key=True)
+    url_small = db.Column(db.String(4096), nullable=True)
+    url_medium = db.Column(db.String(4096), nullable=True)
+    url_big = db.Column(db.String(4096), nullable=True)
+    entity_id = db.Column(db.Integer, db.ForeignKey('entities.id'), nullable=True)
+
+    def __init__(self, small=None, medium=None, big=None, entity=None):
+        self.url_small = small
+        self.url_medium = medium
+        self.url_big = big
+        self.entity = entity
+        

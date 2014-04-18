@@ -3,8 +3,8 @@
 var imhServices = angular.module('imhServices', []);
 
 imhServices.factory('auth', [
-    '$http',
-    function ($http) {
+    '$http', '$q',
+    function ($http, $q) {
         var auth = {},
             urlBase = '/api',
             url = function (p) {
@@ -14,8 +14,28 @@ imhServices.factory('auth', [
         auth.token = null;
 
         auth.login = function (username, password) {
-            $http.post(url('/token/'), {
+            var deferred = $q.defer();
+            
+            $http.post(url('/login/'), {
                 username: username,
+                password: password
+            }).success(function (data) {
+                auth.token = data.token;
+                deferred.resolve();
+                console.log(data);
+            }).error(function (data) {
+                deferred.reject();
+                console.log(data);
+            });
+            return deferred.promise;
+        };
+
+        auth.register = function (username, email, password) {
+            var deferred = $q.defer();
+
+            $http.post(url('/user/'), {
+                username: username,
+                email: email,
                 password: password
             }).success(function (data) {
                 auth.token = data.token;
@@ -23,6 +43,7 @@ imhServices.factory('auth', [
             }).error(function (data) {
                 console.log(data);
             });
+            return deferred.promise;
         };
 
         auth.some = function () {
