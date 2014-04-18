@@ -3,7 +3,7 @@ from flask import request, abort
 from flask.ext.restful import reqparse, abort, Api, Resource
 from schemas import LoginSchema, TokenSchema, RegisterSchema
 from utils import token_required
-from models import db, User
+from models import db, User, Entity, Image
 
 api = Api(prefix='/api')
 
@@ -35,7 +35,6 @@ class LoginResource(SchemaResource):
 class UserResource(SchemaResource):
     schema = RegisterSchema
     def post(self):
-        print self.data
         user = User.query.filter_by(username=self.data['username']).first()
         if user is not None:
             return {'message': 'User already exists'}, 400
@@ -46,6 +45,11 @@ class UserResource(SchemaResource):
         db.session.commit()
         return {'token': user.generate_auth_token()}
 
+class LastEntityResource(Resource):
+    def get(self):
+        last = Entity.query.order_by(Entity.id.desc()).limit(20)
+        return {'entities': [l.serialize for l in last.all()]}
 
 api.add_resource(LoginResource, '/login/')
 api.add_resource(UserResource, '/user/')
+api.add_resource(LastEntityResource, '/entity/last/')

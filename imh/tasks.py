@@ -5,8 +5,8 @@ from models import db, Entity, Image
 
 celery = Celery('tasks', config_source='imh.configs.celeryconfig')
 
-KAZAN_LAT = 55.47
-KAZAN_LONG = 49.08
+KAZAN_LAT = 55.792403
+KAZAN_LONG = 49.131203
 RADIUS_M = 6000
 VK_SITE, TWITTER_SITE, INSTAGRAM_SITE = 'vk', 'twitter', 'instagram'
 
@@ -39,7 +39,7 @@ def vk_photos_search():
     db.session.add_all(images)
     db.session.commit()
 
-    return len(entities)
+    return len(entities), len(items)
 
 
 def get_vk_photo(item):

@@ -70,6 +70,15 @@ class Entity(db.Model):
         self.url = None
         self.alien_name = None
 
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'lat': self.lat,
+            'long': self.long
+        }
+
 
 class Image(db.Model):
     __tablename__ = 'images'
