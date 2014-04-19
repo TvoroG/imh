@@ -106,10 +106,10 @@ imhServices.factory('entityF', [
             });
 
             entity.window = mapF.createWindow({
-                content: '<img src="' + model.image[0].small + '">'
+                content: '<a target="_blank" href="' + model.url +'"><img src="' + model.image[0].small + '"></a>'
             });
 
-            google.maps.event.addListener(entity.marker, 'click', function () {
+            mapF.addListener(entity.marker, 'click', function () {
                 entity.window.open(entity.marker.map, entity.marker);
             });
 
@@ -133,7 +133,6 @@ imhServices.factory('entityF', [
                         newE = getNew(entities),
                         oldE = getOld(entities);
 
-                    console.log('es:');
                     console.log(es);
                     deferred.resolve({'new': newE, 'old': oldE});
                 })

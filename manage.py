@@ -12,7 +12,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def runcelery():
-    celery.worker_main(['worker', '-A', 'imh.tasks.celery',
+    celery.worker_main(['worker', '-B', '-A', 'imh.tasks.celery',
                   '-l', 'info', '--autoreload'])
 
 if __name__ == '__main__':

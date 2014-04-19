@@ -61,13 +61,13 @@ class Entity(db.Model):
     alien_name = db.Column(db.String(100), nullable=True)
     url = db.Column(db.String(4096), nullable=True)
 
-    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None):
+    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None, url=None):
         self.alien_site = alien_site
         self.alien_id = alien_id
         self.text = text if text else None
         self.lat = lat
         self.lng = lng
-        self.url = None
+        self.url = url
         self.alien_name = None
 
     @property
@@ -79,6 +79,7 @@ class Entity(db.Model):
             'lng': self.lng,
             'alien_id': self.alien_id,
             'alien_site': self.alien_site,
+            'url': self.url,
             'image': [i.serialize for i in self.images]
         }
 
