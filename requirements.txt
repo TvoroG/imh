@@ -33,5 +33,5 @@ requests-oauthlib==0.4.0
 simplejson==3.3.2
 six==1.6.1
 translationstring==1.1
-vk-api==4.7
+-e git://github.com/python273/vk_api.git@bacba3fbf53815d7cf2efce3b957c5c10ec5a044#egg=vk_api-master
 wsgiref==0.1.2
