@@ -18,6 +18,7 @@ anyjson==0.3.3
 billiard==3.3.0.17
 celery==3.1.11
 colander==0.9.9
+gunicorn==18.0
 ipython==2.0.0
 itsdangerous==0.24
 kombu==3.0.15
@@ -25,7 +26,6 @@ oauthlib==0.6.0
 psycopg2==2.5.2
 py-bcrypt==0.4
 pyinotify==0.9.4
-python-twitter==2.0
 pytz==2014.2
 redis==2.9.1
 requests==2.2.0
