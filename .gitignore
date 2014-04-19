@@ -1,6 +1,7 @@
 *~
 *.pyc
 .env/
+venv/
 
 # configs
 imh/configs/*

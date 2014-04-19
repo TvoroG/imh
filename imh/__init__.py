@@ -1,6 +1,5 @@
 from flask import Flask
 
-from admin import admin
 from api import api
 from models import db
 
@@ -14,7 +13,6 @@ except Exception as e:
 
 
 db.init_app(app)
-admin.init_app(app)
 api.init_app(app)
 
 
