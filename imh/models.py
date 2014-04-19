@@ -55,18 +55,18 @@ class Entity(db.Model):
     text = db.Column(db.Text, nullable=True)
     images = db.relationship('Image', backref='entity', lazy='dynamic')
     lat = db.Column(db.Float, nullable=True)
-    long = db.Column(db.Float, nullable=True)
+    lng = db.Column(db.Float, nullable=True)
     alien_site = db.Column(db.Enum('twitter', 'vk', 'instagram', name='alien_site_types'))
     alien_id = db.Column(db.BigInteger, nullable=True)
     alien_name = db.Column(db.String(100), nullable=True)
     url = db.Column(db.String(4096), nullable=True)
 
-    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, long=None):
+    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None):
         self.alien_site = alien_site
         self.alien_id = alien_id
         self.text = text if text else None
         self.lat = lat
-        self.long = long
+        self.lng = lng
         self.url = None
         self.alien_name = None
 
@@ -76,7 +76,9 @@ class Entity(db.Model):
             'id': self.id,
             'text': self.text,
             'lat': self.lat,
-            'long': self.long
+            'lng': self.lng,
+            'alien_id': self.alien_id,
+            'alien_site': self.alien_site
         }
 
 

@@ -2,34 +2,45 @@
 
 var imhDirectives = angular.module('imhDirectives', []);
 
-imhDirectives.directive('map', ['$timeout', '$http', function ($timeout, $http) {
+imhDirectives.directive('map', ['$timeout', '$http', 'mapF', 'entityF', function ($timeout, $http, mapF, entityF) {
     var mapOptions = {
-        center: new google.maps.LatLng(55.792403, 49.131203),
+        center: mapF.createPosition(55.792403, 49.131203),
         zoom: 12,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     
     var map,
-        fetchEntitiesPromise,
+        entities = [],
+        updatePromise,
         delay = 5000;
 
     var link = function (scope, element, attrs) {
-        map = new google.maps.Map(element.contents()[0], mapOptions);
-        fetchEntitiesPromise = $timeout(fetchEntities, delay);
+        map = mapF.createMap(element.contents()[0], mapOptions);
+        updatePromise = $timeout(update, delay);
     };
 
-    var fetchEntities = function () {
-        $http.get('/api/entity/last/')
-            .success(function (data) {
-                console.log(data);
-                fetchEntitiesPromise = $timeout(fetchEntities, delay);
-            })
-            .error(function (data) {
-                console.log(data);
-                fetchEntitiesPromise = $timeout(fetchEntities, delay);
+    var update = function () {
+        entityF
+            .fetch(map)
+            .then(function (es) {
+                updatePromise = $timeout(update, delay);
+                
+                var i;
+                for (i = 0; i < es['new'].length; i++) {
+                    es['new'][i].marker.setMap(map);
+                }
+
+                for (i = 0; i < es['old'].length; i++) {
+                    es['old'][i].marker.setMap(null);
+                    es['old'][i].marker = null;
+                }
+
+                console.log(es);
+            }, function () {
+                updatePromise = $timeout(update, delay);
             });
     };
-      
+
     
     return {
         restrict: 'E',
