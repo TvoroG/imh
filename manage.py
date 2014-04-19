@@ -11,7 +11,7 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 @manager.command
-def run_celery():
+def runcelery():
     celery.worker_main(['worker', '-A', 'imh.tasks.celery',
                   '-l', 'info', '--autoreload'])
 

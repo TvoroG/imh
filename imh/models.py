@@ -78,7 +78,8 @@ class Entity(db.Model):
             'lat': self.lat,
             'lng': self.lng,
             'alien_id': self.alien_id,
-            'alien_site': self.alien_site
+            'alien_site': self.alien_site,
+            'image': [i.serialize for i in self.images]
         }
 
 
@@ -96,4 +97,11 @@ class Image(db.Model):
         self.url_medium = medium
         self.url_big = big
         self.entity = entity
-        
+
+    @property
+    def serialize(self):
+        return {
+            'small': self.url_small,
+            'medium': self.url_medium,
+            'big': self.url_big
+        }

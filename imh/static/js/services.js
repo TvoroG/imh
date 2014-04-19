@@ -78,6 +78,14 @@ imhServices.factory('mapF', [
         mf.createMarker = function (options) {
             return new google.maps.Marker(options);
         };
+
+        mf.createWindow = function (options) {
+            return new google.maps.InfoWindow(options);
+        };
+
+        mf.addListener = function () {
+            google.maps.event.addListener.apply(null, arguments);
+        };
         return mf;
     }]);
 
@@ -90,12 +98,21 @@ imhServices.factory('entityF', [
         
         ef.create = function (model) {
             var entity = {};
+            entity.model = model;
             entity.position = mapF.createPosition(model.lat, model.lng);
             entity.marker = mapF.createMarker({
                 position: entity.position,
                 title: model.id.toString()
             });
-            entity.model = model;
+
+            entity.window = mapF.createWindow({
+                content: '<img src="' + model.image[0].small + '">'
+            });
+
+            google.maps.event.addListener(entity.marker, 'click', function () {
+                entity.window.open(entity.marker.map, entity.marker);
+            });
+
             return entity;
         };
 
@@ -157,7 +174,7 @@ imhServices.factory('entityF', [
             for (i = es.length - 1; i >= 0; i--) {
                 found = false;
                 for (j = 0; j < models.length && !found; j++) {
-                    found = isModelsEqual(es[j].model, models[j]);
+                    found = isModelsEqual(es[i].model, models[j]);
                 }
 
                 if (!found) {
