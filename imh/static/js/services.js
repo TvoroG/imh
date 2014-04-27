@@ -39,60 +39,49 @@ imhServices.factory('auth', [
                 password: password
             }).success(function (data) {
                 auth.token = data.token;
+                deferred.resolve();
                 console.log(data);
             }).error(function (data) {
+                deferred.reject();
                 console.log(data);
             });
             return deferred.promise;
-        };
-
-        auth.some = function () {
-            if (auth.token === null) {
-                console.log('token is missing');
-                return;
-            }
-            $http.post(url('/some/'), {
-                token: auth.token
-            }).success(function (data) {
-                console.log(data);
-            }).error(function (data) {
-                console.log(data);
-            });
         };
 
         return auth;
     }]);
 
 imhServices.factory('mapF', [
-    function () {
+    '$window',
+    function ($window) {
         var mf = {};
 
         mf.createMap = function (el, options) {
-            return new google.maps.Map(el, options);
+            return new $window.google.maps.Map(el, options);
         };
         
         mf.createPosition = function (lat, lng) {
-            return new google.maps.LatLng(lat, lng);
+            return new $window.google.maps.LatLng(lat, lng);
         };
 
         mf.createMarker = function (options) {
-            return new google.maps.Marker(options);
+            return new $window.google.maps.Marker(options);
         };
 
         mf.createWindow = function (options) {
-            return new google.maps.InfoWindow(options);
+            return new $window.google.maps.InfoWindow(options);
         };
 
         mf.addListener = function () {
-            google.maps.event.addListener.apply(null, arguments);
+            $window.google.maps.event.addListener.apply(null, arguments);
         };
         return mf;
     }]);
 
 
 imhServices.factory('entityF', [
-    '$http', '$q', 'mapF',
-    function ($http, $q, mapF) {
+    '$rootScope', '$http', '$q', 'mapF', 'Vk',
+    function ($rootScope, $http, $q, mapF, Vk) {
         var ef = {},
             es = [];
         
@@ -144,6 +133,16 @@ imhServices.factory('entityF', [
             return deferred.promise;
         };
 
+        ef.modeVkFriends = function () {
+            Vk
+                .friends()
+                .then(function (response) {
+                    console.log(response);
+                }, function (data) {
+                    console.log(data);
+                });
+        };
+
         var getNew = function (models) {
             var i, j, e,
                 found = false,
@@ -151,9 +150,8 @@ imhServices.factory('entityF', [
             
             for (i = 0; i < models.length; i++) {
                 found = false;
-                for (j = 0; j < es.length && !found; j++) {
+                for (j = 0; j < es.length && !found; j++)
                     found = isModelsEqual(models[i], es[j].model);
-                }
 
                 if (!found) {
                     e = ef.create(models[i]);
@@ -172,9 +170,8 @@ imhServices.factory('entityF', [
 
             for (i = es.length - 1; i >= 0; i--) {
                 found = false;
-                for (j = 0; j < models.length && !found; j++) {
+                for (j = 0; j < models.length && !found; j++)
                     found = isModelsEqual(es[i].model, models[j]);
-                }
 
                 if (!found) {
                     res.push(es[i]);
@@ -191,4 +188,74 @@ imhServices.factory('entityF', [
         };
         
         return ef;
+    }]);
+
+
+imhServices.factory('Vk', [
+    '$window', '$q',
+    function ($window, $q) {
+        var Vk = {
+            openapi: $window.VK,
+            session: null,
+            accessPermission: 4
+        }
+        , sessionDeferred = $q.defer();
+        
+        Vk.openapi.init({
+            apiId: 4313646
+        });
+
+        Vk.login = function () {
+            Vk.openapi.Auth.login(authLogin, Vk.accessPermission);
+        };
+
+        Vk.authorize = function () {
+            if (!Vk.session) {
+                Vk.openapi.Auth.getLoginStatus(authLogin);
+            } else {
+                sessionDeferred.resolve(Vk.session);
+            }
+            return sessionDeferred.promise;
+        };
+
+        Vk.isAuthorized = function () {
+            return !!Vk.session;
+        };
+
+        Vk.friends = function () {
+            var deferred = $q.defer();
+            
+            if (!Vk.isAuthorized()) {
+                deferred.reject();
+                return deferred.promise;
+            }
+
+            Vk.openapi.Api.call('execute.friendsPhotos', {
+                user_id: Vk.session.mid
+            }, function (data) {
+                if (data.response) {
+                    console.log(data);
+                    deferred.resolve(data.response);
+                } else {
+                    deferred.reject(data);
+                }
+            });
+
+            return deferred.promise;
+        };
+
+        var authLogin = function (response) {
+            if (response.session) {
+                setSession(response);
+            } else {
+                sessionDeferred.reject();
+            }
+            console.log(response);
+        }
+        , setSession = function (response) {
+            Vk.session = response.session;
+            sessionDeferred.resolve(Vk.session);
+        };
+        
+        return Vk;
     }]);

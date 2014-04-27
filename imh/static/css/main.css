@@ -36,3 +36,7 @@ body {
 .register-form {
     float: left;
 }
+
+.modal-backdrop.am-fade {
+    opacity: .5;
+}

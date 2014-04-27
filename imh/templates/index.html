@@ -2,28 +2,27 @@
 <html ng-app="imhApp">
 <head>
   <title>Imh</title>
+  <link rel="stylesheet" href="/static/lib/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="/static/css/main.css">
 
   <script src="/static/lib/angular/angular.min.js"></script>
   <script src="/static/lib/angular/angular-resource.min.js"></script>
   <script src="/static/lib/angular/angular-route.min.js"></script>
+  <script src="/static/lib/angular/angular-sanitize.min.js"></script>
+  <script src="/static/lib/angular-strap/angular-strap.min.js"></script>
+  <script src="/static/lib/angular-strap/angular-strap.tpl.min.js"></script>
 
   <script src="http://maps.googleapis.com/maps/api/js?sensor=true"></script>
+  <script src="http://vk.com/js/api/openapi.js"></script>
 
   <script src="/static/js/app.js"></script>
   <script src="/static/js/controllers.js"></script>
   <script src="/static/js/directives.js"></script>
   <script src="/static/js/services.js"></script>
 </head>
-<body ng-controller="MapCtrl">
-  <map></map>
-  <!--
+<body>
   <div class="top-block">
-    <div class="login-register-block">
-      <login-form></login-form>
-      <register-form></register-form>
-    </div>
+    <div ng-view></div>
   </div>
-  -->
 </body>
 </html>

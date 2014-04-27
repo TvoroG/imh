@@ -1,5 +1,5 @@
-<form class="login-form" name="loginForm">
-  <input ng-model="username" required type="text" placeholder="Username" /><br/>
-  <input ng-model="password" required type="password" placeholder="Password" /><br/>
-  <input ng-click="submit()" type="submit" value="Enter" />
+<form name="form">
+  <input ng-model="login.username" required type="text" placeholder="Username" /><br/>
+  <input ng-model="login.password" required type="password" placeholder="Password" /><br/>
+  <button ng-click="login.submit()" ng-disabled="form.$invalid"/>Enter</button
 </form>

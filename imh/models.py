@@ -1,3 +1,4 @@
+import pytz
 from datetime import datetime
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.bcrypt import generate_password_hash, check_password_hash
@@ -60,8 +61,9 @@ class Entity(db.Model):
     alien_id = db.Column(db.BigInteger, nullable=True)
     alien_name = db.Column(db.String(100), nullable=True)
     url = db.Column(db.String(4096), nullable=True)
+    created = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None, url=None):
+    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None, url=None, created=None):
         self.alien_site = alien_site
         self.alien_id = alien_id
         self.text = text if text else None
@@ -69,6 +71,10 @@ class Entity(db.Model):
         self.lng = lng
         self.url = url
         self.alien_name = None
+        if created is not None:
+            self.created = created
+        else:
+            self.created = datetime.now(pytz.timezone('Europe/Moscow'))
 
     @property
     def serialize(self):
