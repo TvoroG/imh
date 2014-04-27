@@ -134,12 +134,12 @@ imhServices.factory('entityF', [
         };
 
         ef.modeVkFriends = function () {
-            Vk
-                .friends()
-                .then(function (response) {
-                    console.log(response);
+            Vk.friends.get()
+                .then(Vk.friends.photos)
+                .then(function (photos) {
+                    console.log(photos);
                 }, function (data) {
-                    console.log(data);
+                    console.log('Noooo!');
                 });
         };
 
@@ -192,11 +192,17 @@ imhServices.factory('entityF', [
 
 
 imhServices.factory('Vk', [
-    '$window', '$q',
-    function ($window, $q) {
+    '$window', '$q', '$http', '$timeout',
+    function ($window, $q, $http, $timeout) {
         var Vk = {
             openapi: $window.VK,
             session: null,
+            user: {
+                friends: {
+                    count: null,
+                    photos: null
+                }
+            },
             accessPermission: 4
         }
         , sessionDeferred = $q.defer();
@@ -222,26 +228,75 @@ imhServices.factory('Vk', [
             return !!Vk.session;
         };
 
-        Vk.friends = function () {
+        Vk.friends = {};
+        Vk.friends.get = function () {
             var deferred = $q.defer();
             
             if (!Vk.isAuthorized()) {
                 deferred.reject();
                 return deferred.promise;
+            } else if (Vk.user.friends.count) {
+                deferred.resolve();
+                return deferred.promise;
             }
 
-            Vk.openapi.Api.call('execute.friendsPhotos', {
+            Vk.openapi.Api.call('friends.get', {
                 user_id: Vk.session.mid
             }, function (data) {
                 if (data.response) {
                     console.log(data);
-                    deferred.resolve(data.response);
+                    Vk.user.friends.count = data.response.length;
+                    deferred.resolve();
                 } else {
-                    deferred.reject(data);
+                    deferred.reject();
                 }
             });
 
             return deferred.promise;
+        };
+
+        var execFunc = 'https://api.vk.com/method/execute.friendsPhotos';
+
+        Vk.friends.photos = function () {
+            var deferred = $q.defer();
+            
+            if (!Vk.user.friends.count || !Vk.isAuthorized()) {
+                deferred.reject('user friends need');
+                return deferred.promise;
+            }
+            
+            Vk.user.friends.photos = [];
+            Vk.friends._photos(0, deferred);
+            return deferred.promise;
+        };
+
+        Vk.friends._photos = function (offset, deferred) {
+            if (!Vk.user.friends.count || !Vk.isAuthorized()) {
+                deferred.reject('user friends need');
+            }
+
+            Vk.openapi.Api.call('execute.friendsPhotos', {
+                user_id: Vk.session.mid,
+                offset: offset
+            }, function (data) {
+                if (data.response) {
+                    var ofs = data.response.offset,
+                        photos = data.response.photos;
+
+                    if (ofs < Vk.user.friends.count) {
+                        Vk.friends._photos(ofs, deferred);
+                    } else {
+                        deferred.resolve(Vk.user.friends.photos);
+                    }
+                    Vk.user.friends.photos = Vk.user.friends.photos.concat(photos);
+                } else if (data.error.error_code === 6) {
+                    $timeout(function () {
+                        Vk.friends._photos(offset, deferred);
+                    }, 1000);
+                } else {
+                    deferred.reject(data);
+                }
+            });
         };
 
         var authLogin = function (response) {
