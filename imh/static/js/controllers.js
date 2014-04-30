@@ -85,8 +85,8 @@ imhControllers.controller('RegisterCtrl', [
     }]);
 
 imhControllers.controller('SettingsCtrl', [
-    '$scope', '$modal', '$window', 'auth', 'Vk',
-    function ($scope, $modal, $window, auth, Vk) {
+    '$scope', '$modal', '$window', 'auth', 'Vk', '$cookies',
+    function ($scope, $modal, $window, auth, Vk, $cookies) {
         $scope.vk = Vk;
         $scope.vk.show = true;
         $scope.settings = {};
@@ -102,11 +102,9 @@ imhControllers.controller('SettingsCtrl', [
             $window.history.back();
         });
 
-
         Vk
             .authorize()
             .then(function (session) {
-                console.log(session);
                 $scope.vk.show = false;
             }, function () {
                 $scope.vk.show = true;

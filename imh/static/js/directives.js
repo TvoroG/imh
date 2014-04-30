@@ -17,30 +17,37 @@ imhDirectives.directive('map', [
             delay = 5000;
 
         var link = function (scope, element, attrs) {
-            map = mapF.createMap(element.contents()[0], mapOptions);
-            updatePromise = $timeout(update, delay);
+            if (element.contents()[0]) {
+                map = mapF.createMap(element.contents()[0], mapOptions);
+                updatePromise = $timeout(pullLast, delay);
+
+                scope.$on('mode.vk.activate', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                });
+            }            
         };
 
-        var update = function () {
+        var pullLast = function () {
             entityF
                 .fetch(map)
                 .then(function (es) {
-                    updatePromise = $timeout(update, delay);
-                    
-                    var i;
-                    for (i = 0; i < es['new'].length; i++) {
-                        es['new'][i].marker.setMap(map);
-                    }
-
-                    for (i = 0; i < es['old'].length; i++) {
-                        es['old'][i].marker.setMap(null);
-                        es['old'][i].marker = null;
-                    }
-
+                    updatePromise = $timeout(pullLast, delay);
+                    update(es);
                     console.log(es);
                 }, function () {
-                    updatePromise = $timeout(update, delay);
+                    updatePromise = $timeout(pullLast, delay);
                 });
+        }
+        , update = function (es) {
+            var i;
+            for (i = 0; i < es['new'].length; i++) {
+                es['new'][i].marker.setMap(map);
+            }
+            for (i = 0; i < es['old'].length; i++) {
+                es['old'][i].marker.setMap(null);
+                es['old'][i].marker = null;
+            }
         };
 
         

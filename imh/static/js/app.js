@@ -2,6 +2,7 @@
 
 var imhApp = angular.module('imhApp', [
     'ngRoute',
+    'ngCookies',
     'imhControllers',
     'imhDirectives',
     'imhServices',
