@@ -15,29 +15,51 @@ imhApp.config([
         $routeProvider
             .when('/index', {
                 templateUrl: '/static/partials/index.html',
-                controller: 'IndexCtrl'
+                controller: 'IndexCtrl',
+                loginRequired: false
             })
             .when('/login', {
                 templateUrl: '/static/partials/index.html',
-                controller: 'LoginCtrl'
+                controller: 'LoginCtrl',
+                loginRequired: false
+            })
+            .when('/logout', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'LogoutCtrl',
+                loginRequired: true
             })
             .when('/register', {
                 templateUrl: '/static/partials/index.html',
-                controller: 'RegisterCtrl'
+                controller: 'RegisterCtrl',
+                loginRequired: false
             })
             .when('/home', {
                 templateUrl: '/static/partials/home.html',
-                controller: 'HomeCtrl'
+                controller: 'HomeCtrl',
+                loginRequired: true
             })
             .when('/home/settings', {
                 templateUrl: '/static/partials/home.html',
-                controller: 'SettingsCtrl'
+                controller: 'SettingsCtrl',
+                loginRequired: true
             })
             .when('/home/vk/friends', {
                 templateUrl: '/static/partials/home.html',
-                controller: 'VkFriendsCtrl'
+                controller: 'VkFriendsCtrl',
+                loginRequired: true
             })
             .otherwise({
                 redirectTo: '/index'
+            });
+    }]);
+
+imhApp.run([
+    '$rootScope', '$location', 'auth',
+    function ($rootScope, $location, auth) {
+        $rootScope.$on(
+            '$routeChangeStart',
+            function (event, currRoute, prevRoute) {
+                if (currRoute.loginRequired && !auth.isLogged())
+                    $location.path('/login');
             });
     }]);

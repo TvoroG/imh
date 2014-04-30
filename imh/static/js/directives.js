@@ -19,7 +19,7 @@ imhDirectives.directive('map', [
         var link = function (scope, element, attrs) {
             if (element.contents()[0]) {
                 map = mapF.createMap(element.contents()[0], mapOptions);
-                updatePromise = $timeout(pullLast, delay);
+                updatePromise = $timeout(pullLast);
 
                 scope.$on('mode.vk.activate', function (event, es) {
                     update(es);
@@ -46,7 +46,6 @@ imhDirectives.directive('map', [
             }
             for (i = 0; i < es['old'].length; i++) {
                 es['old'][i].marker.setMap(null);
-                es['old'][i].marker = null;
             }
         };
 

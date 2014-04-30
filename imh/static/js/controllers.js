@@ -52,6 +52,13 @@ imhControllers.controller('LoginCtrl', [
         };
     }]);
 
+imhControllers.controller('LogoutCtrl', [
+    '$location', 'auth',
+    function ($location, auth) {
+        auth.logout();
+        $location.path('/index');
+    }]);
+
 imhControllers.controller('RegisterCtrl', [
     '$scope', '$modal', '$location', '$window', 'auth',
     function ($scope, $modal, $location, $window, auth) {

@@ -30,6 +30,12 @@ imhServices.factory('auth', [
             return false;
         };
 
+        auth.isLogged = function () {
+            if (!auth.token)
+                tokenFromSession();
+            return !!auth.token;
+        };
+
         auth.login = function (username, password) {
             var deferred = $q.defer();
 
@@ -50,6 +56,10 @@ imhServices.factory('auth', [
                 console.log(data);
             });
             return deferred.promise;
+        };
+
+        auth.logout = function () {
+            setToken('');
         };
 
         auth.register = function (username, email, password) {
