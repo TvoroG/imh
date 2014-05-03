@@ -128,7 +128,7 @@ imhServices.factory('entityF', [
 
             entity.window = mapF.createWindow({
                 content: createWindowContent(model.url,
-                                             model.image[0].small)
+                                             model.img_small)
             });
 
             mapF.addListener(entity.marker, 'click', function () {

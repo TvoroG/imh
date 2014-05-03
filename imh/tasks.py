@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from celery import Celery
 from celery.contrib.methods import task_method
 import vk_api
-from models import db, Entity, Image
+from models import db, Entity
 
 celery = Celery('tasks', config_source='imh.configs.celeryconfig')
 vkapi = vk_api.VkApi()
@@ -36,20 +36,16 @@ class Vk(object):
         items = self.fetch('photos.search', self.params)
 
         entities = []
-        images = []
         for i in items:
             p = self.get_vk_photo(i)
             entity = Entity(VK_SITE, p['id'], p['text'],
                             p['lat'], p['lng'], p['url'],
-                            p['created'])
-            image = Image(p['photo_75'], p['photo_130'],
-                          p['photo_1280'], entity)
+                            p['created'], p['photo_75'],
+                            p['photo_130'], p['photo_1280'])
             entities.append(entity)
-            images.append(image)
 
         #self.get_newest_item_time(entities)
         db.session.add_all(entities)
-        db.session.add_all(images)
         db.session.commit()
         
         return len(entities)

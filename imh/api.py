@@ -3,7 +3,7 @@ from flask import request, abort
 from flask.ext.restful import reqparse, abort, Api, Resource
 from schemas import LoginSchema, TokenSchema, RegisterSchema
 from utils import token_required
-from models import db, User, Entity, Image
+from models import db, User, Entity
 
 api = Api(prefix='/api')
 

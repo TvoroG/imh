@@ -54,7 +54,6 @@ class Entity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=True)
-    images = db.relationship('Image', backref='entity', lazy='dynamic')
     lat = db.Column(db.Float, nullable=True)
     lng = db.Column(db.Float, nullable=True)
     alien_site = db.Column(db.Enum('twitter', 'vk', 'instagram', name='alien_site_types'))
@@ -62,8 +61,12 @@ class Entity(db.Model):
     alien_name = db.Column(db.String(100), nullable=True)
     url = db.Column(db.String(4096), nullable=True)
     created = db.Column(db.DateTime, nullable=True)
+    img_small = db.Column(db.String(4096), nullable=True)
+    img_medium = db.Column(db.String(4096), nullable=True)
+    img_big = db.Column(db.String(4096), nullable=True)
 
-    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None, url=None, created=None):
+    def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None,
+                 url=None, created=None, img_small=None, img_medium=None, img_big=None):
         self.alien_site = alien_site
         self.alien_id = alien_id
         self.text = text if text else None
@@ -76,6 +79,10 @@ class Entity(db.Model):
         else:
             self.created = datetime.now(pytz.timezone('Europe/Moscow'))
 
+        self.img_small = img_small
+        self.img_medium = img_medium
+        self.img_big = img_big
+
     @property
     def serialize(self):
         return {
@@ -86,29 +93,7 @@ class Entity(db.Model):
             'alien_id': self.alien_id,
             'alien_site': self.alien_site,
             'url': self.url,
-            'image': [i.serialize for i in self.images]
-        }
-
-
-class Image(db.Model):
-    __tablename__ = 'images'
-
-    id = db.Column(db.Integer, primary_key=True)
-    url_small = db.Column(db.String(4096), nullable=True)
-    url_medium = db.Column(db.String(4096), nullable=True)
-    url_big = db.Column(db.String(4096), nullable=True)
-    entity_id = db.Column(db.Integer, db.ForeignKey('entities.id'), nullable=True)
-
-    def __init__(self, small=None, medium=None, big=None, entity=None):
-        self.url_small = small
-        self.url_medium = medium
-        self.url_big = big
-        self.entity = entity
-
-    @property
-    def serialize(self):
-        return {
-            'small': self.url_small,
-            'medium': self.url_medium,
-            'big': self.url_big
+            'img_small': self.img_small,
+            'img_medium': self.img_medium,
+            'img_big': self.img_big
         }

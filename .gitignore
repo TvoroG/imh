@@ -3,6 +3,7 @@
 .env/
 venv/
 config
+celerybeat-schedule
 
 # configs
 imh/configs/*
