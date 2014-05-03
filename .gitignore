@@ -10,3 +10,6 @@ imh/configs/*
 !imh/configs/__init__.py
 !imh/configs/settings.py
 !imh/configs/celeryconfig.py
+
+#logs
+logs/
