@@ -7,9 +7,9 @@ CELERY_ACCEPT_CONTENT = ['json', 'pickle']
 CELERY_IMPORTS = ('imh.tasks',)
 
 CELERYBEAT_SCHEDULE = {
-    'vk-photos-search-every-10-seconds': {
+    'vk-photos-search-every-60-seconds': {
         'task': 'Vk.photos_search',
-        'schedule': timedelta(seconds=10),
+        'schedule': timedelta(seconds=60),
         'args': (vk,)
     }
 }
