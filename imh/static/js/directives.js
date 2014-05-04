@@ -14,7 +14,7 @@ imhDirectives.directive('map', [
         var map,
             entities = [],
             updatePromise,
-            delay = 5000;
+            delay = 30000;
 
         var link = function (scope, element, attrs) {
             if (element.contents()[0]) {
