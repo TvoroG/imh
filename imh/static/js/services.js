@@ -115,7 +115,8 @@ imhServices.factory('entityF', [
     '$rootScope', '$http', '$q', 'mapF', 'Vk',
     function ($rootScope, $http, $q, mapF, Vk) {
         var ef = {},
-            es = [];
+            es = [],
+            current = es;
         
         ef.create = function (model) {
             var entity = {};
@@ -138,7 +139,7 @@ imhServices.factory('entityF', [
             return entity;
         };
         
-        ef.createFromVkObject = function (obj) {
+        ef.createFromVkObject = function (obj, getPhotoSrc) {
             var entity = {};
             entity.model = obj;
             entity.position = mapF.createPosition(obj.lat, obj['long']);
@@ -149,7 +150,7 @@ imhServices.factory('entityF', [
 
             entity.window = mapF.createWindow({
                 content: createWindowContent(Vk.photoLink(obj),
-                                             obj.src_small)
+                                             getPhotoSrc(obj))
             });
             
             mapF.addListener(entity.marker, 'click', function () {
@@ -166,10 +167,13 @@ imhServices.factory('entityF', [
             return res;
         };
 
-        ef.createFromAllVkObjects = function (objs) {
+        ef.createFromAllVkObjects = function (objs, getPhotoSrc) {
             var i, res = [];
             for (i = 0; i < objs.length; i++) {
-                res.push(ef.createFromVkObject(objs[i]));
+                if (hasPosition(objs[i])) {
+                    console.log('has position');
+                    res.push(ef.createFromVkObject(objs[i], getPhotoSrc));
+                }
             }
             return res;
         };
@@ -183,6 +187,7 @@ imhServices.factory('entityF', [
                         newE = getNew(entities),
                         oldE = getOld(entities);
 
+                    current = es;
                     deferred.resolve({'new': newE, 'old': oldE});
                 })
                 .error(function (data) {
@@ -193,17 +198,48 @@ imhServices.factory('entityF', [
             return deferred.promise;
         };
 
+        ef.modeLast = function () {
+            var mes = {
+                'new': es,
+                'old': current
+            };
+            $rootScope.$broadcast('mode.last', mes);
+            current = mes['new'];
+        };
+
         ef.modeVkFriends = function () {
             Vk.friends.get()
                 .then(Vk.friends.photos)
                 .then(function (photos) {
-                    $rootScope.$broadcast('mode.vk.activate', {
-                        'new': ef.createFromAllVkObjects(photos),
-                        'old': es
-                    });
-                    console.log(photos);
+                    var mes = {
+                        'new': ef.createFromAllVkObjects(
+                            photos,
+                            function (o) {return o.src_small;}
+                        ),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.vk.friends', mes);
+                    current = mes['new'];
                 }, function (data) {
                     console.log('Noooo!');
+                });
+        };
+
+        ef.modeVkObject = function (name) {
+            Vk.photos.all(name)
+                .then(function (photos) {
+                    var mes = {
+                        'new': ef.createFromAllVkObjects(
+                            photos,
+                            function (o) {return o.src_small;}
+                        ),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.vk.object', mes);
+                    current = mes['new'];
+                    console.log(photos);
+                }, function (data) {
+                    console.log(data);
                 });
         };
 
@@ -255,6 +291,10 @@ imhServices.factory('entityF', [
             return '<a target="_blank" href="' + href + '">' +
                 '<img src="' + img + '"></a>';
         };
+
+        var hasPosition = function (o) {
+            return 'lat' in o && 'long' in o;
+        };
         
         return ef;
     }]);
@@ -268,13 +308,16 @@ imhServices.factory('Vk', [
             session: null,
             rootUrl: 'https://vk.com/',
             sessionKey: 'imh_vk_session',
+            accessPermission: 4
+        }
+        , cache = {
             user: {
                 friends: {
                     count: null,
                     photos: null
                 }
             },
-            accessPermission: 4
+            photos: {}
         }
         , sessionDeferred = $q.defer();
         
@@ -308,7 +351,7 @@ imhServices.factory('Vk', [
             if (!Vk.isAuthorized()) {
                 deferred.reject();
                 return deferred.promise;
-            } else if (Vk.user.friends.count) {
+            } else if (cache.user.friends.count) {
                 deferred.resolve();
                 return deferred.promise;
             }
@@ -317,7 +360,7 @@ imhServices.factory('Vk', [
                 user_id: Vk.session.mid
             }, function (data) {
                 if (data.response) {
-                    Vk.user.friends.count = data.response.length;
+                    cache.user.friends.count = data.response.length;
                     deferred.resolve();
                 } else {
                     deferred.reject();
@@ -330,18 +373,21 @@ imhServices.factory('Vk', [
         Vk.friends.photos = function () {
             var deferred = $q.defer();
             
-            if (!Vk.user.friends.count || !Vk.isAuthorized()) {
+            if (!cache.user.friends.count || !Vk.isAuthorized()) {
                 deferred.reject('user friends need');
+                return deferred.promise;
+            } else if (cache.user.friends.photos) {
+                deferred.resolve(cache.user.friends.photos);
                 return deferred.promise;
             }
             
-            Vk.user.friends.photos = [];
+            cache.user.friends.photos = [];
             Vk.friends._photos(0, deferred);
             return deferred.promise;
         };
 
         Vk.friends._photos = function (offset, deferred) {
-            if (!Vk.user.friends.count || !Vk.isAuthorized()) {
+            if (!cache.user.friends.count || !Vk.isAuthorized()) {
                 deferred.reject('user friends need');
             }
 
@@ -353,12 +399,12 @@ imhServices.factory('Vk', [
                     var ofs = data.response.offset,
                         photos = data.response.photos;
 
-                    if (ofs < Vk.user.friends.count) {
+                    if (ofs < cache.user.friends.count) {
                         Vk.friends._photos(ofs, deferred);
                     } else {
-                        deferred.resolve(Vk.user.friends.photos);
+                        deferred.resolve(cache.user.friends.photos);
                     }
-                    Vk.user.friends.photos = Vk.user.friends.photos.concat(photos);
+                    cache.user.friends.photos = cache.user.friends.photos.concat(photos);
                 } else if (data.error.error_code === 6) {
                     $timeout(function () {
                         Vk.friends._photos(offset, deferred);
@@ -372,6 +418,75 @@ imhServices.factory('Vk', [
         Vk.photoLink = function (o) {
             return Vk.rootUrl + 'id' + o.owner_id +
                 '?z=photo' + o.owner_id + '_' + o.pid;
+        };
+
+        Vk.resolveScreenName = function (screenName) {
+            var deferred = $q.defer();
+
+            Vk.openapi.Api.call('utils.resolveScreenName', {
+                screen_name: screenName
+            }, function (data) {
+                if (data.response && 'object_id' in data.response) {
+                    deferred.resolve(data.response);
+                } else {
+                    deferred.reject();
+                }
+            });
+
+            return deferred.promise;
+        };
+
+        Vk.photos = {};
+        Vk.photos.all = function (name) {
+            var deferred = $q.defer();         
+            
+            Vk.resolveScreenName(name)
+                .then(function (data) {
+                    if (data.object_id in cache.photos) {
+                        deferred.resolve(cache.photos[data.object_id]);
+                    } else if (data.type === 'user') {
+                        Vk.users._photos(data.object_id, 0,
+                                         [], deferred);
+                    } else {
+                        deferred.reject('Only users');
+                    }
+                });
+            
+            return deferred.promise;
+        };
+
+        Vk.users = {};
+        Vk.users.photos = function (userId) {
+            var deferred = $q.defer();
+            Vk.users._photos(userId, 0, [], deferred);
+            return deferred.promise;
+        };
+
+        Vk.users._photos = function (objectId, offset, photos, deferred) {
+            Vk.openapi.Api.call('photos.getAll', {
+                owner_id: objectId,
+                no_service_albums: 0,
+                count: 200,
+                offset: offset
+            }, function (data) {
+                if (data.response && data.response.length > 0) {
+                    var total = data.response[0],
+                        count = data.response.length - 1;
+                    
+                    data.response.shift();
+                    photos.push.apply(photos, data.response);
+                    
+                    if (offset + count < total) {
+                        Vk.users._photos(objectId, offset + count,
+                                         photos, deferred);
+                    } else {
+                        cache.photos[objectId] = photos;
+                        deferred.resolve(photos);
+                    }
+                } else {
+                    deferred.reject(data);
+                }
+            });
         };
 
         var authLogin = function (response) {

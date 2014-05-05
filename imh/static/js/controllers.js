@@ -2,22 +2,11 @@
 
 var imhControllers = angular.module('imhControllers', []);
 
-imhControllers.controller('MapCtrl', [
-    '$scope', 'auth',
-    function ($scope, auth) {
-        $scope.login = function () {
-            auth.login($scope.username, $scope.password);
-        };
-
-        $scope.some = function () {
-            auth.some();
-        };
-    }]);
-
 
 imhControllers.controller('IndexCtrl', [
-    '$scope', 'auth',
-    function ($scope, auth) {
+    '$scope', 'entityF',
+    function ($scope, entityF) {
+        entityF.modeLast();
     }]);
 
 
@@ -139,8 +128,16 @@ imhControllers.controller('VkFriendsCtrl', [
         entityF.modeVkFriends();
     }]);
 
+
+imhControllers.controller('VkUsersCtrl', [
+    '$scope', '$routeParams', 'entityF',
+    function ($scope, $routeParams, entityF) {
+        entityF.modeVkObject($routeParams.name);
+    }]);
+
+
 imhControllers.controller('HomeCtrl', [
-    '$scope', '$modal', 'auth', 'Vk',
-    function ($scope, $modal, auth, Vk) {
-        
+    '$scope', 'entityF',
+    function ($scope, entityF) {
+        entityF.modeLast();
     }]);

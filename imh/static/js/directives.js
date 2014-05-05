@@ -20,8 +20,19 @@ imhDirectives.directive('map', [
             if (element.contents()[0]) {
                 map = mapF.createMap(element.contents()[0], mapOptions);
                 updatePromise = $timeout(pullLast);
+                
+                scope.$on('mode.last', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                    updatePromise = $timeout(pullLast);
+                });               
 
-                scope.$on('mode.vk.activate', function (event, es) {
+                scope.$on('mode.vk.friends', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                });
+
+                scope.$on('mode.vk.object', function (event, es) {
                     update(es);
                     $timeout.cancel(updatePromise);
                 });
@@ -41,11 +52,11 @@ imhDirectives.directive('map', [
         }
         , update = function (es) {
             var i;
-            for (i = 0; i < es['new'].length; i++) {
-                es['new'][i].marker.setMap(map);
-            }
             for (i = 0; i < es['old'].length; i++) {
                 es['old'][i].marker.setMap(null);
+            }
+            for (i = 0; i < es['new'].length; i++) {
+                es['new'][i].marker.setMap(map);
             }
         };
 

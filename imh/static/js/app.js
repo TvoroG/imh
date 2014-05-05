@@ -48,6 +48,11 @@ imhApp.config([
                 controller: 'VkFriendsCtrl',
                 loginRequired: true
             })
+            .when('/vk/:name', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'VkUsersCtrl',
+                loginRequired: false
+            })
             .otherwise({
                 redirectTo: '/index'
             });
