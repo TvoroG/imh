@@ -19,7 +19,6 @@ imhDirectives.directive('map', [
         var link = function (scope, element, attrs) {
             if (element.contents()[0]) {
                 map = mapF.createMap(element.contents()[0], mapOptions);
-                updatePromise = $timeout(pullLast);
                 
                 scope.$on('mode.last', function (event, es) {
                     update(es);
