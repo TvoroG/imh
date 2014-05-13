@@ -14,7 +14,8 @@ instagramapi = InstagramAPI(client_id='bfe8e851a9d6456eb66df9dfa53b72b1',  clien
 vkapi = vk_api.VkApi()
 KAZAN_LAT = 55.792403
 KAZAN_LONG = 49.131203
-RADIUS_M = 5000
+RADIUS_M = 6000
+RADIUS_I = 5000
 VK_SITE, TWITTER_SITE, INSTAGRAM_SITE = 'vk', 'twitter', 'instagram'
 
 
@@ -95,7 +96,7 @@ class Instagram(object):
         self.params = {
             'lat': KAZAN_LAT,
             'lng': KAZAN_LONG,
-            'distance': RADIUS_M,
+            'distance': RADIUS_I,
             'count': 100,
         }
         self.tz = pytz.timezone('Europe/Moscow')
