@@ -4,6 +4,7 @@
 venv/
 config
 celerybeat-schedule
+changelog
 
 # configs
 imh/configs/*
