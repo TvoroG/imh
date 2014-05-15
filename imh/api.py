@@ -1,4 +1,5 @@
 import colander as c
+from sqlalchemy import union_all
 from flask import request, abort
 from flask.ext.restful import reqparse, abort, Api, Resource
 from schemas import LoginSchema, TokenSchema, RegisterSchema
@@ -47,7 +48,19 @@ class UserResource(SchemaResource):
 
 class LastEntityResource(Resource):
     def get(self):
-        last = Entity.query.order_by(Entity.id.desc()).limit(20)
+        last_vk = (Entity.query
+                   .filter_by(alien_site='vk')
+                   .order_by(Entity.id.desc())
+                   .limit(15)
+                   .subquery())
+        last_instagram = (Entity.query
+                          .filter_by(alien_site='instagram')
+                          .order_by(Entity.id.desc())
+                          .limit(15)
+                          .subquery())
+        last = (db.session.query(Entity)
+                .select_entity_from(union_all(last_vk.select(),
+                                              last_instagram.select())))
         return {'entities': [l.serialize for l in last.all()]}
 
 api.add_resource(LoginResource, '/login/')

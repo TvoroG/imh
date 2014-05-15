@@ -188,6 +188,7 @@ imhServices.factory('entityF', [
                         oldE = getOld(entities);
 
                     current = es;
+                    console.log('size:', current.length)
                     deferred.resolve({'new': newE, 'old': oldE});
                 })
                 .error(function (data) {
