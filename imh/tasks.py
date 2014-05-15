@@ -191,3 +191,17 @@ def twitter_search():
     db.session.commit()
         
     return len(entities)
+
+def twitter_user_twits(name):
+    st=twitterapi.GetSearch(name)
+    geo_items = [s for s in st if s.geo is not None]
+
+    entities = []
+    for i in geo_items:
+        entity = Entity(TWITTER_SITE, i.id, i.text,
+                        i.geo['coordinates'][0], i.geo['coordinates'][1], 
+						'https://twitter.com/{0}/status/{1}'.format(i.user.screen_name, i.id),
+                        datetime.fromtimestamp(i.created_at_in_seconds))
+        entities.append(entity)
+
+    return entities
