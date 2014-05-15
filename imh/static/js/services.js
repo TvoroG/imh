@@ -181,7 +181,6 @@ imhServices.factory('entityF', [
             var i, res = [];
             for (i = 0; i < objs.length; i++) {
                 if (hasPosition(objs[i])) {
-                    console.log('has position');
                     res.push(ef.createFromVkObject(objs[i], getPhotoSrc));
                 }
             }
@@ -522,6 +521,11 @@ imhServices.factory('Vk', [
             });
         };
 
+        Vk.logout = function () {
+            delete $cookies[Vk.sessionKey];
+            Vk.session = null;
+        };
+
         var authLogin = function (response) {
             if (response.session) {
                 setSession(response);
@@ -539,7 +543,11 @@ imhServices.factory('Vk', [
         , sessionFromCookies = function () {
             var s, now;
             if (Vk.sessionKey in $cookies) {
-                s = angular.fromJson($cookies[Vk.sessionKey]);
+                try {
+                    s = angular.fromJson($cookies[Vk.sessionKey]);
+                } catch (e) {
+                    return false;
+                }
                 if (s && 'expire' in s && 'mid' in s) {
                     // get unix timestamp
                     now = Math.round(+new Date()/1000);

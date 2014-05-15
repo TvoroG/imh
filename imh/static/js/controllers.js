@@ -42,9 +42,10 @@ imhControllers.controller('LoginCtrl', [
     }]);
 
 imhControllers.controller('LogoutCtrl', [
-    '$location', 'auth',
-    function ($location, auth) {
+    '$location', 'auth', 'Vk',
+    function ($location, auth, Vk) {
         auth.logout();
+        Vk.logout();
         $location.path('/index');
     }]);
 
