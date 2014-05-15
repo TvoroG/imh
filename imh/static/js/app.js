@@ -53,6 +53,11 @@ imhApp.config([
                 controller: 'VkUsersCtrl',
                 loginRequired: false
             })
+            .when('/twitter/:name', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'TwitterUsersCtrl',
+                loginRequired: false
+            })
             .otherwise({
                 redirectTo: '/index'
             });

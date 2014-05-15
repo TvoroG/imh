@@ -13,3 +13,7 @@ class LoginSchema(c.MappingSchema):
 
 class RegisterSchema(LoginSchema):
     email = c.SchemaNode(c.String(), validator=c.Length(min=3, max=50))
+
+
+class TwitterUserTweetsSchema(c.MappingSchema):
+    name = c.SchemaNode(c.String(), validator=c.Length(min=1))

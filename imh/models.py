@@ -67,6 +67,7 @@ class Entity(db.Model):
 
     def __init__(self, alien_site=None, alien_id=None, text=None, lat=None, lng=None,
                  url=None, created=None, img_small=None, img_medium=None, img_big=None):
+        super(Entity, self).__init__()
         self.alien_site = alien_site
         self.alien_id = alien_id
         self.text = text if text else None

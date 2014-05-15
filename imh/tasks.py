@@ -22,8 +22,8 @@ twitterapi = twitter.Api(consumer_key = 'TIntPKCNErHhw5vL0kD23Q8Nq',
 KAZAN_LAT = 55.792403
 KAZAN_LONG = 49.131203
 RADIUS_M = 6000
-RADIUS_KM = '60km'
 RADIUS_I = 5000
+RADIUS_KM = '60km'
 VK_SITE, TWITTER_SITE, INSTAGRAM_SITE = 'vk', 'twitter', 'instagram'
 
 
@@ -166,12 +166,6 @@ class Instagram(object):
         return [i for i in items if i.id in uids]
 
 
-
-
-instagram = Instagram()
-vk = Vk()
-
-
 #twitter
 @celery.task(filter=task_method, name='twitter_search')
 def twitter_search():
@@ -192,8 +186,8 @@ def twitter_search():
         
     return len(entities)
 
-def twitter_user_twits(name):
-    st=twitterapi.GetSearch(name)
+def twitter_user_tweets(name):
+    st=twitterapi.GetUserTimeline(screen_name=name, count=200)
     geo_items = [s for s in st if s.geo is not None]
 
     entities = []
@@ -205,3 +199,6 @@ def twitter_user_twits(name):
         entities.append(entity)
 
     return entities
+
+instagram = Instagram()
+vk = Vk()

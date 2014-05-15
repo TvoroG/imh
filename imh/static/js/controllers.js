@@ -136,6 +136,13 @@ imhControllers.controller('VkUsersCtrl', [
     }]);
 
 
+imhControllers.controller('TwitterUsersCtrl', [
+    '$scope', '$routeParams', 'entityF',
+    function ($scope, $routeParams, entityF) {
+        entityF.modeTwitterObject($routeParams.name);
+    }]);
+
+
 imhControllers.controller('HomeCtrl', [
     '$scope', 'entityF',
     function ($scope, entityF) {

@@ -112,9 +112,10 @@ imhServices.factory('mapF', [
 
 
 imhServices.factory('entityF', [
-    '$rootScope', '$http', '$q', 'mapF', 'Vk',
+    '$rootScope', '$http', '$q', 'mapF', 'Vk', 'Twitter',
     '$templateCache', '$compile',
-    function ($rootScope, $http, $q, mapF, Vk, $templateCache, $compile) {
+    function ($rootScope, $http, $q, mapF, Vk, Twitter,
+              $templateCache, $compile) {
         var ef = {},
             es = [],
             current = es;
@@ -124,8 +125,7 @@ imhServices.factory('entityF', [
             entity.model = model;
             entity.position = mapF.createPosition(model.lat, model.lng);
             entity.marker = mapF.createMarker({
-                position: entity.position,
-                title: model.id.toString()
+                position: entity.position
             });
 
             entity.window = mapF.createWindow({
@@ -146,8 +146,7 @@ imhServices.factory('entityF', [
             entity.model = obj;
             entity.position = mapF.createPosition(obj.lat, obj['long']);
             entity.marker = mapF.createMarker({
-                position: entity.position,
-                title: obj.pid.toString()
+                position: entity.position
             });
 
             entity.window = mapF.createWindow({
@@ -191,7 +190,7 @@ imhServices.factory('entityF', [
                         oldE = getOld(entities);
 
                     current = es;
-                    console.log('size:', current.length)
+                    console.log('size:', current.length);
                     deferred.resolve({'new': newE, 'old': oldE});
                 })
                 .error(function (data) {
@@ -247,6 +246,22 @@ imhServices.factory('entityF', [
                 });
         };
 
+        ef.modeTwitterObject = function (name) {
+            console.log(name);
+            Twitter.user.tweets(name)
+                .then(function (tweets) {
+                    var mes = {
+                        'new': ef.createAll(tweets),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.twitter.object', mes);
+                    current = mes['new'];
+                    console.log(tweets);
+                },function (data) {
+                    console.log(data);
+                });
+        };
+
         var getNew = function (models) {
             var i, j, e,
                 found = false,
@@ -292,11 +307,12 @@ imhServices.factory('entityF', [
         };
 
         var createWindowContent = function (href, img, text) {
+            var image = img ? '<img src="' + img + '">' : '';
             text = text ? text : '';
             return '<div style="float: left; max-width: 150px;">' +
-                '<a target="_blank" href="' + href + '"><img src="' + img + '"></a>' +
+                '<a target="_blank" href="' + href + '">' + image +
                 '<div>' + text + '</div>' + 
-                '</div>';
+                '</a></div>';
         };
 
         var hasPosition = function (o) {
@@ -528,3 +544,28 @@ imhServices.factory('Vk', [
         
         return Vk;
     }]);
+
+imhServices.factory('Twitter', [
+    '$http', '$q',
+    function ($http, $q) {
+        var t = {};
+
+        t.user = {};
+        t.user.tweets = function (name) {
+            var deferred = $q.defer();
+            
+            $http.get('/api/twitter/user/tweets/', {
+                params: {name: name}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data['tweets']);
+            }).error(function (data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        };
+        
+        return t;
+    }
+]);

@@ -1,7 +1,5 @@
 from datetime import timedelta
-from imh.tasks import instagram
-from imh.tasks import vk
-
+from imh.tasks import instagram, vk
 
 BROKER_URL = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
@@ -19,8 +17,8 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(seconds=60),
         'args': (vk,)
     },
-	'twitter-search-every-10-second': {
+	'twitter-search-every-60-second': {
 		'task': 'twitter_search',
-        'schedule': timedelta(seconds=10),
+        'schedule': timedelta(seconds=60),
 	}
 }
