@@ -53,9 +53,14 @@ imhApp.config([
                 controller: 'VkUsersCtrl',
                 loginRequired: false
             })
-            .when('/twitter/:name', {
+            .when('/twitter/user/:name', {
                 templateUrl: '/static/partials/index.html',
                 controller: 'TwitterUsersCtrl',
+                loginRequired: false
+            })
+            .when('/twitter/hashtag/:name', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'TwitterHashtagCtrl',
                 loginRequired: false
             })
             .otherwise({

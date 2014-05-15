@@ -40,6 +40,11 @@ imhDirectives.directive('map', [
                     update(es);
                     $timeout.cancel(updatePromise);
                 });
+
+                scope.$on('mode.twitter.hashtag', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                });
             }            
         };
 

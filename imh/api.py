@@ -5,7 +5,7 @@ from flask.ext.restful import reqparse, abort, Api, Resource
 from schemas import (LoginSchema, TokenSchema, RegisterSchema)
 from utils import token_required
 from models import db, User, Entity
-from tasks import twitter_user_tweets
+from tasks import twitter_user_tweets, twitter_hashtags
 
 api = Api(prefix='/api')
 
@@ -59,6 +59,16 @@ class TwitterUserTweetsResource(Resource):
 
         ts = twitter_user_tweets(name)
         return {'tweets': [t.serialize for t in ts]}
+
+
+class TwitterHashtagResource(Resource):
+    def get(self):
+        hashtag = request.args.get('hashtag')
+        if not hashtag:
+            return {'message': 'Bad hashtag'}, 400
+
+        ts = twitter_hashtags(hashtag)
+        return {'tweets': [t.serialize for t in ts]}
         
 
 
@@ -89,3 +99,4 @@ api.add_resource(LoginResource, '/login/')
 api.add_resource(UserResource, '/user/')
 api.add_resource(LastEntityResource, '/entity/last/')
 api.add_resource(TwitterUserTweetsResource, '/twitter/user/tweets/')
+api.add_resource(TwitterHashtagResource, '/twitter/hashtag/')

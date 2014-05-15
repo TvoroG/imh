@@ -140,7 +140,15 @@ imhControllers.controller('VkUsersCtrl', [
 imhControllers.controller('TwitterUsersCtrl', [
     '$scope', '$routeParams', 'entityF',
     function ($scope, $routeParams, entityF) {
+        console.log($routeParams.name);
         entityF.modeTwitterObject($routeParams.name);
+    }]);
+
+
+imhControllers.controller('TwitterHashtagCtrl', [
+    '$scope', '$routeParams', 'entityF',
+    function ($scope, $routeParams, entityF) {
+        entityF.modeTwitterHashtag($routeParams.name);
     }]);
 
 

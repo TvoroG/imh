@@ -254,7 +254,6 @@ imhServices.factory('entityF', [
         };
 
         ef.modeTwitterObject = function (name) {
-            console.log(name);
             Twitter.user.tweets(name)
                 .then(function (tweets) {
                     var mes = {
@@ -265,6 +264,21 @@ imhServices.factory('entityF', [
                     current = mes['new'];
                     console.log(tweets);
                 },function (data) {
+                    console.log(data);
+                });
+        };
+
+        ef.modeTwitterHashtag = function (hashtag) {
+            Twitter.hashtag.tweets(hashtag)
+                .then(function (tweets) {
+                    var mes = {
+                        'new': ef.createAll(tweets),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.twitter.hashtag', mes);
+                    current = mes['new'];
+                    console.log(tweets);
+                }, function (data) {
                     console.log(data);
                 });
         };
@@ -574,6 +588,22 @@ imhServices.factory('Twitter', [
             
             $http.get('/api/twitter/user/tweets/', {
                 params: {name: name}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data['tweets']);
+            }).error(function (data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        };
+
+        t.hashtag = {};
+        t.hashtag.tweets = function (hashtag) {
+            var deferred = $q.defer();
+            
+            $http.get('/api/twitter/hashtag/', {
+                params: {hashtag: hashtag}
             }).success(function (data) {
                 console.log(data);
                 deferred.resolve(data['tweets']);

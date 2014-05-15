@@ -200,5 +200,20 @@ def twitter_user_tweets(name):
 
     return entities
 
+def twitter_hashtags(tag):
+    st=twitterapi.GetSearch('#{}'.format(tag), count=200)
+    print len(st)
+    hash_items = [s for s in st if s.geo is not None]
+    
+    entities = []
+    for i in hash_items:
+        entity = Entity(TWITTER_SITE, i.id, i.text,
+                        i.geo['coordinates'][0], i.geo['coordinates'][1],
+                        'https://twitter.com/{0}/status/{1}'.format(i.user.screen_name, i.id),
+                        datetime.fromtimestamp(i.created_at_in_seconds))
+        entities.append(entity)
+
+    return entities
+
 instagram = Instagram()
 vk = Vk()
