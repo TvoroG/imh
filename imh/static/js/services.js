@@ -113,7 +113,8 @@ imhServices.factory('mapF', [
 
 imhServices.factory('entityF', [
     '$rootScope', '$http', '$q', 'mapF', 'Vk',
-    function ($rootScope, $http, $q, mapF, Vk) {
+    '$templateCache', '$compile',
+    function ($rootScope, $http, $q, mapF, Vk, $templateCache, $compile) {
         var ef = {},
             es = [],
             current = es;
@@ -129,7 +130,8 @@ imhServices.factory('entityF', [
 
             entity.window = mapF.createWindow({
                 content: createWindowContent(model.url,
-                                             model.img_small)
+                                             model.img_small,
+                                             model.text)
             });
 
             mapF.addListener(entity.marker, 'click', function () {
@@ -150,7 +152,8 @@ imhServices.factory('entityF', [
 
             entity.window = mapF.createWindow({
                 content: createWindowContent(Vk.photoLink(obj),
-                                             getPhotoSrc(obj))
+                                             getPhotoSrc(obj),
+                                             obj.text)
             });
             
             mapF.addListener(entity.marker, 'click', function () {
@@ -288,9 +291,12 @@ imhServices.factory('entityF', [
                     m1.alien_id == m2.alien_id);
         };
 
-        var createWindowContent = function (href, img) {
-            return '<a target="_blank" href="' + href + '">' +
-                '<img src="' + img + '"></a>';
+        var createWindowContent = function (href, img, text) {
+            text = text ? text : '';
+            return '<div style="float: left; max-width: 150px;">' +
+                '<a target="_blank" href="' + href + '"><img src="' + img + '"></a>' +
+                '<div>' + text + '</div>' + 
+                '</div>';
         };
 
         var hasPosition = function (o) {
