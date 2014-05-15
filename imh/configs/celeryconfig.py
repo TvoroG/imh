@@ -11,5 +11,9 @@ CELERYBEAT_SCHEDULE = {
         'task': 'Vk.photos_search',
         'schedule': timedelta(seconds=60),
         'args': (vk,)
-    }
+    },
+	'twitter-search-every-10-second': {
+		'task': 'twitter_search',
+        'schedule': timedelta(seconds=10),
+	}
 }
