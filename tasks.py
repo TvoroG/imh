@@ -6,13 +6,9 @@ from celery import Celery
 from celery.contrib.methods import task_method
 import vk_api
 import twitter
-from instagram.client import InstagramAPI
 from models import db, Entity
-import vk_api
-
 
 celery = Celery('tasks', config_source='imh.configs.celeryconfig')
-instagramapi = InstagramAPI(client_id='bfe8e851a9d6456eb66df9dfa53b72b1',  client_secret='3fd16bd409ca4bb683ac18f59181361a')
 vkapi = vk_api.VkApi()
 twitterapi = twitter.Api(consumer_key = 'TIntPKCNErHhw5vL0kD23Q8Nq', 
 	consumer_secret ='mJ8akdjMId19HgXL2PLaWkomx2uss7jw12Xo7CygWXvl1j5nzf', 
@@ -23,9 +19,7 @@ KAZAN_LAT = 55.792403
 KAZAN_LONG = 49.131203
 RADIUS_M = 6000
 RADIUS_KM = '60km'
-RADIUS_I = 5000
 VK_SITE, TWITTER_SITE, INSTAGRAM_SITE = 'vk', 'twitter', 'instagram'
-
 
 class Vk(object):
     def __init__(self):
@@ -99,76 +93,6 @@ def get_unique_items(items, site, key):
     return [i for i in items if key(i) in uids]
 
 
-class Instagram(object):
-    def __init__(self):
-        self.params = {
-            'lat': KAZAN_LAT,
-            'lng': KAZAN_LONG,
-            'distance': RADIUS_I,
-            'count': 100,
-        }
-        self.tz = pytz.timezone('Europe/Moscow')
-        self.unix_ts = datetime(1970, 1, 1, tzinfo=self.tz)
-        self.newest_item_time = None
-        self.default_time_gap = timedelta(hours=1)
-
-    @celery.task(filter=task_method, name='Instagram.media_search')
-    def photos_search(self):
-        self.params['min_timestamp'] = self.get_start_time()
-        items = self.fetch('media_search', self.params)
-
-        entities = []
-        for i in items:
-            p = self.get_instagram_photo(i)
-            entity = Entity(INSTAGRAM_SITE, p['id'], p['text'],
-                            p['lat'], p['lng'], p['url'],
-                            p['created'], p['photo_150'],
-                            p['photo_306'], p['photo_612'])
-            entities.append(entity)
-
-        db.session.add_all(entities)
-        db.session.commit()
-        
-        return len(entities)
-
-    def get_instagram_photo(self, item):
-        return dict(
-            id=item.id,
-            text=(item.caption and item.caption.text),
-            lat=item.location.point.latitude,
-            lng=item.location.point.longitude,
-            photo_150=item.get_thumbnail_url(),
-            photo_306=item.get_low_resolution_url(),
-            photo_612=item.get_standard_resolution_url(),
-            url=item.link,
-            created=item.created_time
-        )
-
-    def fetch(self, method_name, params):
-        response = instagramapi.media_search(**params)
-        for i in response:
-            i.id = int((i.id).replace("_" + i.user.id, "")) 
-        uitems = self.get_unique_items(response, INSTAGRAM_SITE)
-        return uitems
-
-    def get_newest_item_time(self, es):
-        if es:
-            self.newest_item_time = es[0].created
-
-    def get_start_time(self):
-        return time.time() - (60 * 60)
-
-    def get_unique_items(self, items, site):
-        ids = [i.id for i in items]
-        eid = Entity.query.filter(Entity.alien_id.in_(ids),
-                                  Entity.alien_site==site)
-        uids = set(ids) - set([e.alien_id for e in eid.all()])
-        return [i for i in items if i.id in uids]
-
-
-
-
-instagram = Instagram()
 vk = Vk()
 
 
@@ -191,17 +115,3 @@ def twitter_search():
     db.session.commit()
         
     return len(entities)
-
-def twitter_user_twits(name):
-    st=twitterapi.GetSearch(name)
-    geo_items = [s for s in st if s.geo is not None]
-
-    entities = []
-    for i in geo_items:
-        entity = Entity(TWITTER_SITE, i.id, i.text,
-                        i.geo['coordinates'][0], i.geo['coordinates'][1], 
-						'https://twitter.com/{0}/status/{1}'.format(i.user.screen_name, i.id),
-                        datetime.fromtimestamp(i.created_at_in_seconds))
-        entities.append(entity)
-
-    return entities
