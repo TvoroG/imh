@@ -124,9 +124,16 @@ imhServices.factory('entityF', [
             var entity = {};
             entity.model = model;
             entity.position = mapF.createPosition(model.lat, model.lng);
-            entity.marker = mapF.createMarker({
-                position: entity.position
-            });
+            if (model.alien_site == 'vk') {
+                entity.marker = mapF.createMarker({
+                    position: entity.position,
+                    icon: '/static/img/vk_marker.png'
+                });
+            } else {
+                entity.marker = mapF.createMarker({
+                    position: entity.position
+                });
+            }
 
             entity.window = mapF.createWindow({
                 content: createWindowContent(model.url,
@@ -146,7 +153,8 @@ imhServices.factory('entityF', [
             entity.model = obj;
             entity.position = mapF.createPosition(obj.lat, obj['long']);
             entity.marker = mapF.createMarker({
-                position: entity.position
+                position: entity.position,
+                icon: '/static/img/vk_marker.png'
             });
 
             entity.window = mapF.createWindow({
@@ -307,9 +315,11 @@ imhServices.factory('entityF', [
         };
 
         var createWindowContent = function (href, img, text) {
-            var image = img ? '<img src="' + img + '">' : '';
+            var image = img ? '<img src="' + img + '">' : '',
+                maxw = img ? 150 : 300;
+            
             text = text ? text : '';
-            return '<div style="float: left; max-width: 150px;">' +
+            return '<div style="float: left; max-width:' + maxw + 'px;">'+
                 '<a target="_blank" href="' + href + '">' + image +
                 '<div>' + text + '</div>' + 
                 '</a></div>';
