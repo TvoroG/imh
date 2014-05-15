@@ -121,13 +121,23 @@ imhServices.factory('entityF', [
             current = es;
         
         ef.create = function (model) {
-            var entity = {};
+            var entity = {},
+                icon = null;
+            
             entity.model = model;
             entity.position = mapF.createPosition(model.lat, model.lng);
-            if (model.alien_site == 'vk') {
+            
+            if (model.alien_site == 'vk')
+                icon = '/static/img/vk_marker.png';
+            else if (model.alien_site == 'twitter')
+                icon = '/static/img/twitter_marker.png';
+            else if (model.alien_site == 'instagram')
+                icon = '/static/img/instagram_marker.png';
+
+            if (icon) {
                 entity.marker = mapF.createMarker({
                     position: entity.position,
-                    icon: '/static/img/vk_marker.png'
+                    icon: icon
                 });
             } else {
                 entity.marker = mapF.createMarker({
