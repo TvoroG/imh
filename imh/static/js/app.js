@@ -63,6 +63,11 @@ imhApp.config([
                 controller: 'TwitterHashtagCtrl',
                 loginRequired: false
             })
+            .when('/search', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'SearchCtrl',
+                loginRequired: false
+            })        
             .otherwise({
                 redirectTo: '/index'
             });

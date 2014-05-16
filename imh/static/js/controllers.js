@@ -151,6 +151,37 @@ imhControllers.controller('TwitterHashtagCtrl', [
         entityF.modeTwitterHashtag($routeParams.name);
     }]);
 
+imhControllers.controller('SearchCtrl', [
+    '$scope', 'entityF', '$modal', '$location', '$window',
+    function ($scope, entityF, $modal, $location, $window) {
+        $scope.modal = $modal({
+            title: 'Search',
+            prefixEvent: 'search',
+            contentTemplate: '/static/partials/search.html',
+            scope: $scope
+        });
+
+        $scope.options = [
+            {name: 'vk user', url: '/vk/'},
+            {name: 'twitter user', url: '/twitter/user/'},
+            {name: 'twitter hashtag', url: '/twitter/hashtag/'}
+        ];
+
+        $scope.current = $scope.options[0];
+
+        $scope.$on('search.hide', function () {
+            $window.history.back();
+        });
+
+        $scope.$on('$destroy', function () {
+            $scope.modal.$promise.then($scope.modal.hide);
+        });
+
+        $scope.search = function (name, cur) {
+            var url = cur.url + name + '/';
+            $location.path(url);
+        };
+    }]);
 
 imhControllers.controller('HomeCtrl', [
     '$scope', 'entityF',
