@@ -7,9 +7,3 @@ from models import User
 @app.route('/')
 def index():
     return make_response(open('imh/templates/index.html').read())
-
-
-@app.route('/some/')
-@token_required
-def some():
-    return 'hello world, {}'.format(g.user.username)

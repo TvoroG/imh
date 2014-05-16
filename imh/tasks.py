@@ -201,7 +201,7 @@ def twitter_user_tweets(name):
     return entities
 
 def twitter_hashtags(tag):
-    st=twitterapi.GetSearch('#{}'.format(tag), count=200)
+    st=twitterapi.GetSearch(u'#{}'.format(tag), count=200)
     print len(st)
     hash_items = [s for s in st if s.geo is not None]
     
