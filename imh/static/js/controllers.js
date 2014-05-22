@@ -151,6 +151,18 @@ imhControllers.controller('TwitterHashtagCtrl', [
         entityF.modeTwitterHashtag($routeParams.name);
     }]);
 
+imhControllers.controller('InstagramUsersCtrl', [
+    '$scope', '$routeParams', 'entityF',
+    function ($scope, $routeParams, entityF) {
+        entityF.modeInstagramObject($routeParams.name);
+    }]);
+
+imhControllers.controller('InstagramHashtagCtrl', [
+    '$scope', '$routeParams', 'entityF',
+    function ($scope, $routeParams, entityF) {
+        entityF.modeInstagramHashtag($routeParams.name);
+    }]);
+
 imhControllers.controller('SearchCtrl', [
     '$scope', 'entityF', '$modal', '$location', '$window',
     function ($scope, entityF, $modal, $location, $window) {
@@ -164,7 +176,9 @@ imhControllers.controller('SearchCtrl', [
         $scope.options = [
             {name: 'vk user', url: '/vk/'},
             {name: 'twitter user', url: '/twitter/user/'},
-            {name: 'twitter hashtag', url: '/twitter/hashtag/'}
+            {name: 'twitter hashtag', url: '/twitter/hashtag/'},
+            {name: 'instagram user', url: '/instagram/user/'},
+            {name: 'instagram hashtag', url: '/instagram/hashtag/'}            
         ];
 
         $scope.current = $scope.options[0];

@@ -63,6 +63,16 @@ imhApp.config([
                 controller: 'TwitterHashtagCtrl',
                 loginRequired: false
             })
+            .when('/instagram/user/:name', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'InstagramUsersCtrl',
+                loginRequired: false
+            })
+            .when('/instagram/hashtag/:name', {
+                templateUrl: '/static/partials/index.html',
+                controller: 'InstagramHashtagCtrl',
+                loginRequired: false
+            })
             .when('/search', {
                 templateUrl: '/static/partials/index.html',
                 controller: 'SearchCtrl',

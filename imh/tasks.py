@@ -117,6 +117,35 @@ class Instagram(object):
         self.params['min_timestamp'] = self.get_start_time()
         items = self.fetch('media_search', self.params)
 
+        entities = self.create_entity(items)
+
+        db.session.add_all(entities)
+        db.session.commit()
+        
+        return len(entities)
+
+    def photos_hashtags(self, tag):
+        st, next = instagramapi.tag_recent_media(tag_name=tag, count=200)
+
+        hash_items = [s for s in st if hasattr(s,'location')]
+    
+        for i in hash_items:
+            i.id = int((i.id).replace("_" + i.user.id, ""))
+
+        return self.create_entity(hash_items)
+
+    def photos_users(self, user):
+        client = instagramapi.user_search(q = user)
+        st, next = instagramapi.user_recent_media(user_id = client[0].id, count=200)
+
+        items = [s for s in st if hasattr(s,'location')]
+    
+        for i in items:
+            i.id = int((i.id).replace("_" + i.user.id, ""))
+
+        return self.create_entity(items)
+
+    def create_entity(self, items):
         entities = []
         for i in items:
             p = self.get_instagram_photo(i)
@@ -125,11 +154,7 @@ class Instagram(object):
                             p['created'], p['photo_150'],
                             p['photo_306'], p['photo_612'])
             entities.append(entity)
-
-        db.session.add_all(entities)
-        db.session.commit()
-        
-        return len(entities)
+        return entities
 
     def get_instagram_photo(self, item):
         return dict(
@@ -200,6 +225,7 @@ def twitter_user_tweets(name):
 
     return entities
 
+
 def twitter_hashtags(tag):
     st=twitterapi.GetSearch(u'#{}'.format(tag), count=200)
     print len(st)
@@ -214,6 +240,7 @@ def twitter_hashtags(tag):
         entities.append(entity)
 
     return entities
+
 
 instagram = Instagram()
 vk = Vk()

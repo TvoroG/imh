@@ -112,9 +112,9 @@ imhServices.factory('mapF', [
 
 
 imhServices.factory('entityF', [
-    '$rootScope', '$http', '$q', 'mapF', 'Vk', 'Twitter',
+    '$rootScope', '$http', '$q', 'mapF', 'Vk', 'Twitter', 'Instagram',
     '$templateCache', '$compile',
-    function ($rootScope, $http, $q, mapF, Vk, Twitter,
+    function ($rootScope, $http, $q, mapF, Vk, Twitter, Instagram,
               $templateCache, $compile) {
         var ef = {},
             es = [],
@@ -288,6 +288,36 @@ imhServices.factory('entityF', [
                     $rootScope.$broadcast('mode.twitter.hashtag', mes);
                     current = mes['new'];
                     console.log(tweets);
+                }, function (data) {
+                    console.log(data);
+                });
+        };
+
+        ef.modeInstagramObject = function (name) {
+            Instagram.user.photos(name)
+                .then(function (photos) {
+                    var mes = {
+                        'new': ef.createAll(photos),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.instagram.object', mes);
+                    current = mes['new'];
+                    console.log(photos);
+                },function (data) {
+                    console.log(data);
+                });
+        };
+
+        ef.modeInstagramHashtag = function (hashtag) {
+            Instagram.hashtag.photos(hashtag)
+                .then(function (photos) {
+                    var mes = {
+                        'new': ef.createAll(photos),
+                        'old': current
+                    };
+                    $rootScope.$broadcast('mode.instagram.hashtag', mes);
+                    current = mes['new'];
+                    console.log(photos);
                 }, function (data) {
                     console.log(data);
                 });
@@ -625,5 +655,47 @@ imhServices.factory('Twitter', [
         };
         
         return t;
+    }
+]);
+
+imhServices.factory('Instagram', [
+    '$http', '$q',
+    function ($http, $q) {
+        var inst = {};
+
+
+        inst.user = {};
+        inst.user.photos = function (name) {
+            var deferred = $q.defer();
+            
+            $http.get('/api/instagram/user/', {
+                params: {name: name}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data['photos']);
+            }).error(function (data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        };
+
+        inst.hashtag = {};
+        inst.hashtag.photos = function (hashtag) {
+            var deferred = $q.defer();
+            
+            $http.get('/api/instagram/hashtag/', {
+                params: {hashtag: hashtag}
+            }).success(function (data) {
+                console.log(data);
+                deferred.resolve(data['photos']);
+            }).error(function (data) {
+                deferred.reject(data);
+            });
+
+            return deferred.promise;
+        };
+        
+        return inst;
     }
 ]);

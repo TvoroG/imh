@@ -45,6 +45,16 @@ imhDirectives.directive('map', [
                     update(es);
                     $timeout.cancel(updatePromise);
                 });
+
+                scope.$on('mode.instagram.object', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                });
+
+                scope.$on('mode.instagram.hashtag', function (event, es) {
+                    update(es);
+                    $timeout.cancel(updatePromise);
+                });
             }            
         };
 
