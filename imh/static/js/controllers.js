@@ -31,10 +31,11 @@ imhControllers.controller('LoginCtrl', [
             $window.history.back();
         });
 
-        $scope.login.submit = function () {
+        $scope.login.submit = function (usern, pass) {
+            var u = usern || $scope.login.username,
+                p = pass || $scope.login.password;
             auth
-                .login($scope.login.username,
-                       $scope.login.password)
+                .login(u, p)
                 .then(function () {
                     $location.path('/home');
                 });

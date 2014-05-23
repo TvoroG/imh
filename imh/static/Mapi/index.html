@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>MapWeb</title>
+<link rel="stylesheet" href="css/style.css" />
+<script type="text/javascript" src="js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="js/alphabet.js"></script>
+</head>
+
+<body>
+
+<div class="wrapp">
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d143543.65688624035!2d49.07330300000001!3d55.7955015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x415ead2b7caccd99%3A0x7fcb77b9b5ad8c65!2z0JrQsNC30LDQvdGM!5e0!3m2!1sru!2sru!4v1397826847555" width="100%" height="100%" frameborder="0" style="border:0"></iframe>
+</div>
+
+<div id="button">^
+	<div id="s_panel">
+    <div id="header">
+    	<div id="logo">
+    	<canvas id="myCanvas"></canvas>
+       	<a href="#" class="img_logo">
+  	 		<img src="img/logo.png" width="60px" height="95px" alt=""/>
+		</a>
+        </div>
+        <form class="forma">
+        <input id="textinput" class="login" type="text"  placeholder="Введите логин" />
+        <input id="textinput" class="password" type="password"  placeholder="Введите пароль" />
+        <input type="button" class="button4" value="Войти"  />
+        <input type="button" class="button5" value="Регистрация"  />
+        <input type="button" class="button6" value="Поиск"  />
+        </form>
+        <div class="soc_web">
+        <a href="#" class="vk"></a>
+        <a href="#" class="twit"></a>
+        </div>
+    </div>
+    
+	</div>
+</div>
+
+<script type="text/javascript" src="js/bubbles.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script src="js/nlogin.js"></script>
+<script src="js/init.js"> </script>
+<!--<script>$(document).ready(function(){
+  $(':input').blur(function() {
+    if($(this).val().length == 0) {
+      $(this)
+        .addClass('error')
+     }
+  });
+  $(':input').focus(function() {
+    $(this)
+      .removeClass('error')
+      .next('span')
+      .remove();
+
+  });
+});
+</script>-->
+<script type="text/javascript">
+$( document ).ready(function() {
+$('.button4').show();
+$('.button5').hide();
+$('.button6').hide();
+$('.button4').fadeOut(2000);
+	setTimeout(function(){
+		$('.button5').fadeIn(2000);
+	}, 2000);
+	setTimeout(function(){
+		$('.button5').fadeOut(2000);
+	}, 4000);
+	setTimeout(function(){
+		$('.button6').fadeIn(2000);
+	}, 6000);
+	setTimeout(function(){
+		$('.button6').fadeOut(2000);
+	}, 8000);
+	setTimeout(function(){
+		$('.button4').fadeIn(2000);
+	}, 10000);
+function func1(){ 
+	$('.button4').fadeOut(2000);
+	setTimeout(function(){
+		$('.button5').fadeIn(2000);
+	}, 2000);
+	setTimeout(function(){
+		$('.button5').fadeOut(2000);
+	}, 4000);
+	setTimeout(function(){
+		$('.button6').fadeIn(2000);
+	}, 6000);
+	setTimeout(function(){
+		$('.button6').fadeOut(2000);
+	}, 8000);
+	setTimeout(function(){
+		$('.button4').fadeIn(2000);
+	}, 10000);
+}
+setInterval(func1, 12000);
+
+/*
+$('.button5').fadeIn(10000,function(){
+	setTimeout(function(){
+		$('.button4').fadeOut(1000);
+	}, 2000);
+});
+
+$('.button6').fadeIn(10000,function(){
+	setTimeout(function(){
+		$('.button4').fadeOut(1000);
+	}, 3000);
+});*/
+});
+</script>
+</body>
+</html>
