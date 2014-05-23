@@ -1,8 +1,8 @@
 <div>
   <form name="form">
-    <select ng-model="current" ng-options="o.name for o in options" required>
+    <select ng-model="current" ng-options="o.name for o in options">
     </select>
-    <input ng-model="name" type="text" required>
-    <button ng-click="search(name, current)" ng-disable="form.$invalid">search</button>
+    <input ng-model="name" type="text">
+    <button ng-click="search(name, current)" ng-disabled="form.$invalid">search</button>
   </form>
 </div>
